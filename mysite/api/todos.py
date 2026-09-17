@@ -23,6 +23,15 @@ async def plan_create(payload: PlanCreateRequest):
 
     return PlanCreateResponse(
         plan_status="draft",
-        tasks=result.tasks,
+        tasks=[
+            TaskOut(
+                task_number=task.task_number,
+                title=task.title,
+                details=task.details,
+                priority=task.priority,
+                status=task.status,
+            )
+            for task in result.tasks
+        ],
         tasks_count=len(result.tasks),
     )

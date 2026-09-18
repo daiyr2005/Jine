@@ -14,17 +14,20 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
 )
+import os
+from dotenv import load_dotenv
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-BOT_TOKEN = os.getenv("BOT_TOKEN", "PASTE_YOUR_TOKEN_HERE")
-API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 
+load_dotenv()
+
+BOT_TOKEN = os.getenv("TOKEN_BOT")
+API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8001")
 router = Router()
 
-
-# ---------- Клавиатуры ----------
 
 def main_menu_kb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
@@ -41,7 +44,6 @@ def skip_kb(callback_data: str) -> InlineKeyboardMarkup:
     )
 
 
-# ---------- Состояния FSM ----------
 
 class PlanStates(StatesGroup):
     goal = State()
@@ -53,7 +55,6 @@ class MeetingStates(StatesGroup):
     text = State()
 
 
-# ---------- HTTP-хелперы к бэкенду ----------
 
 async def api_post(path: str, json_data) -> dict | list:
     url = f"{API_BASE_URL}{path}"
@@ -65,7 +66,6 @@ async def api_post(path: str, json_data) -> dict | list:
             return await resp.json()
 
 
-# ---------- /start ----------
 
 @router.message(CommandStart())
 async def cmd_start(message: Message, state: FSMContext):
@@ -91,7 +91,6 @@ async def cmd_cancel(message: Message, state: FSMContext):
     await message.answer("Отменено.", reply_markup=main_menu_kb())
 
 
-# ---------- Сценарий: создание плана задач ----------
 
 @router.callback_query(F.data == "menu:plan")
 async def plan_start(callback: CallbackQuery, state: FSMContext):

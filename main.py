@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 from mysite.api import todos, meetings
+from  mysite.bot import telagram
 import uvicorn
 
 app = FastAPI()
 app.include_router(todos.router)
 app.include_router(meetings.router)
+#app.include_router(telagram.router)
 
 
 if __name__ == "__main__":
